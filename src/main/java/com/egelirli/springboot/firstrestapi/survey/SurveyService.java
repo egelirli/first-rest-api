@@ -52,5 +52,36 @@ public class SurveyService {
 			return null;
 		}
 	
+	}
+
+	public List<Question> retriveAllSurveyQuestions(String surveyId) {
+		
+		List<Question> retList = null;
+		Survey surv = retriveSurvey(surveyId);
+		if(surv != null) {
+			retList = surv.getQuestions();
+		}
+		return retList;
+	}
+
+	public Question retriveSurveyQuestion(String surveyId, String quesionId) {
+		Question quest = null;
+		
+		Survey surv = retriveSurvey(surveyId);
+		if(surv != null) {
+			quest = surv.getQuestion(quesionId);
+		}
+		
+		return quest;
+	}
+
+	public boolean addSurveyQuestion(String surveyId, Question question) {
+		boolean isAdded = false;
+		Survey surv = retriveSurvey(surveyId);
+		if(surv != null) {
+			isAdded = surv.getQuestions().add(question);
+		}
+		return isAdded;				
+		
 	}	
 }

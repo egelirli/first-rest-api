@@ -11,9 +11,11 @@ import org.springframework.stereotype.Component;
 public class UserCommandLineRunner implements CommandLineRunner {
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
+
 	private UserDetailsJpaRepository userRepo;
 	
 	public UserCommandLineRunner(UserDetailsJpaRepository userRepo) {
+
 		super();
 		this.userRepo = userRepo;
 	}

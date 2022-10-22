@@ -40,7 +40,7 @@ public class Survey {
 
 	public Question getQuestion(String quesionId) {
 		
-		  Predicate<? super Question> predicate =
+		Predicate<? super Question> predicate =
 				  		q ->  q.getId().equalsIgnoreCase(quesionId);
 				  		
 		Optional<Question> quest =
@@ -53,12 +53,37 @@ public class Survey {
 		
 	}
 	
+	public boolean modifyQuestion(String questionId, Question question) {
+		
+		Question q = getQuestion(questionId);
+		if(q != null) {
+			q.setCorrectAnswer(question.getCorrectAnswer());
+			q.setDescription(question.getDescription());
+			q.setOptions(question.getOptions());
+			return true;
+		}else {
+			return false;
+		}
+		
+	}
+	
+	
+	public boolean deleteQuestion(String questionId) {
+		
+		Predicate<? super Question> predicate =
+		  		q ->  q.getId().equalsIgnoreCase(questionId);
+		
+		return this.questions.removeIf(predicate);  		
+	}
+	
 	
 	@Override
 	public String toString() {
 		return "Survey [id=" + id + ", title=" + title + ", description=" + description + ", questions=" + questions
 				+ "]";
 	}
+
+
 
 	
 }

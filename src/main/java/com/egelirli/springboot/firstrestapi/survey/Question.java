@@ -41,4 +41,23 @@ public class Question {
 		return "Question [id=" + id + ", description=" + description + ", options=" + options + ", correctAnswer="
 				+ correctAnswer + "]";
 	}
+
+	public void setId(String id) {
+		this.id = id;
+		
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setOptions(List<String> options) {
+		this.options = options;
+	}
+
+	public void setCorrectAnswer(String correctAnswer) {
+		this.correctAnswer = correctAnswer;
+	}
+	
+	
 }

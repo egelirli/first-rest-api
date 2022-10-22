@@ -1,5 +1,7 @@
 package com.egelirli.springboot.firstrestapi.survey;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -75,13 +77,50 @@ public class SurveyService {
 		return quest;
 	}
 
-	public boolean addSurveyQuestion(String surveyId, Question question) {
-		boolean isAdded = false;
+	public String addSurveyQuestion(String surveyId, Question question) {
+		String questId  = "";
 		Survey surv = retriveSurvey(surveyId);
 		if(surv != null) {
-			isAdded = surv.getQuestions().add(question);
+			question.setId(generateRandomId());
+			
+			surv.getQuestions().add(question);
+			questId = question.getId();
 		}
-		return isAdded;				
+		return questId;				
 		
-	}	
+	}
+
+	public boolean modifySurveyQuestion(String surveyId, 
+									    String questionId, 
+									    Question question) {
+		boolean isModified = true;
+		
+		Survey surv = retriveSurvey(surveyId);
+		if(surv != null) {
+			isModified = surv.modifyQuestion(questionId, question);
+		}
+		
+		
+		return isModified;
+	}
+	
+	
+	public boolean deleteSurveyQuestion(String surveyId, String questionId) {
+		boolean isDeleted = false;
+		Survey surv = retriveSurvey(surveyId);
+		if(surv != null) {
+			isDeleted = surv.deleteQuestion(questionId);
+		}
+		
+		return isDeleted;
+	}		
+	
+	private String generateRandomId() {
+          SecureRandom  randomGen = new SecureRandom();
+          return  new BigInteger(32, randomGen).toString();
+		
+	}
+
+
+
 }

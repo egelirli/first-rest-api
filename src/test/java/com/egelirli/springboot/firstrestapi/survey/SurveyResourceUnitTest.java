@@ -1,6 +1,9 @@
 package com.egelirli.springboot.firstrestapi.survey;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -10,6 +13,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -20,6 +24,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @WebMvcTest(controllers = SurveyResource.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class SurveyResourceUnitTest {
 	private static String SPECIFIC_QUESTION_URL = 
 			"http://localhost:8080/surveys/Survey1/questions/Question1";
@@ -126,4 +131,37 @@ public class SurveyResourceUnitTest {
 		
 	}
 	
+	
+	@Test
+	void addNewSurveyQuestion_basicScenario() throws Exception {
+
+		String requestBody = """
+				{
+				  "description": "Your Favorite Language",
+				  "options": [
+				    "Java",
+				    "Python",
+				    "JavaScript",
+				    "Haskell"
+				  ],
+				  "correctAnswer": "Java"
+				}
+			""";
+		
+		when(surveyService.addSurveyQuestion(anyString(),any())).thenReturn("SOME_ID");
+
+		RequestBuilder requestBuilder = 
+				MockMvcRequestBuilders.post(GENERIC_QUESTION_URL)
+				.accept(MediaType.APPLICATION_JSON)
+				.content(requestBody).contentType(MediaType.APPLICATION_JSON);
+
+		MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();		
+		
+		MockHttpServletResponse response = mvcResult.getResponse();
+		String locationHeader = response.getHeader("Location");
+		
+		assertEquals(201, response.getStatus());
+		assertTrue(locationHeader.contains("/surveys/Survey1/questions/SOME_ID"));
+		
+	}
 }

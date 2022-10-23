@@ -3,6 +3,8 @@ package com.egelirli.springboot.firstrestapi.survey;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Base64;
+
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -23,26 +25,19 @@ public class SurveyResourceIT {
 	
 	@Autowired
 	private TestRestTemplate template;
-	String str = """
-			
-			{
-			  "id": "Question1",
-			  "description": "Most Popular Cloud Platform Today",
-			  "options": [
-			    "AWS",
-			    "Azure",
-			    "Google Cloud",
-			    "Oracle Cloud"
-			  ],
-			  "correctAnswer": "AWS"
-			}
-			
-			""";
 	
 	
 	@Test
 	void retrieveSpecificSurveyQuestion_basicScenario() throws JSONException {
-		ResponseEntity<String> responseEntity = template.getForEntity(SPECIFIC_QUESTION_URL, String.class);
+		
+		
+		HttpHeaders headers = getAuthorizedHeader();
+		HttpEntity<String> httpEntity = new HttpEntity<String>(null, headers);
+		ResponseEntity<String> responseEntity 
+			= template.exchange(SPECIFIC_QUESTION_URL, HttpMethod.GET, httpEntity, String.class);
+
+//		ResponseEntity<String> responseEntity = 
+//					template.getForEntity(SPECIFIC_QUESTION_URL, String.class);
 
 		String expectedResponse =
 				"""
@@ -65,7 +60,11 @@ public class SurveyResourceIT {
 
 	@Test
 	void retrieveAllSurveyQuestion_basicScenario() throws JSONException {
-		ResponseEntity<String> responseEntity = template.getForEntity(ALL_SURVEY_QUESTION_URL, String.class);
+		//ResponseEntity<String> responseEntity = template.getForEntity(ALL_SURVEY_QUESTION_URL, String.class);
+		HttpHeaders headers = getAuthorizedHeader();
+		HttpEntity<String> httpEntity = new HttpEntity<String>(null, headers);
+		ResponseEntity<String> responseEntity 
+			= template.exchange(ALL_SURVEY_QUESTION_URL, HttpMethod.GET, httpEntity, String.class);
 
 		String expectedResponse =
 				"""
@@ -105,12 +104,8 @@ public class SurveyResourceIT {
 				""";
 
 		
-		
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
-		
+		HttpHeaders headers = getAuthorizedHeader();
 		HttpEntity<String> httpEntity = new HttpEntity<String>(requestBody, headers);
-		
 		ResponseEntity<String> responseEntity 
 			= template.exchange(ALL_SURVEY_QUESTION_URL, HttpMethod.POST, httpEntity, String.class);
 		
@@ -121,9 +116,27 @@ public class SurveyResourceIT {
 		
 		//DELETE
 		//locationHeader
-		//REMOVE SIDE EFFECT	
-		template.delete(locationHeader);
+		//REMOVE SIDE EFFECT			
+		ResponseEntity<String> responseEntityDelete
+		      = template.exchange(locationHeader, HttpMethod.DELETE, httpEntity, String.class);
+		//template.delete(locationHeader);
+		assertTrue(responseEntityDelete.getStatusCode().is2xxSuccessful());
 		
+	}
+
+	private HttpHeaders getAuthorizedHeader() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		headers.add("Authorization",  "Basic " + encodeUserPassword("veli", "dummy"));
+		
+		return headers;
 	}	
+	
+	private String encodeUserPassword(String user, String password) {
+		String  userPassword = user+":"+password;
+		byte[] encBytes =  Base64.getEncoder().encode(userPassword.getBytes());
+		return new String(encBytes);
+		
+	}
 	
 }

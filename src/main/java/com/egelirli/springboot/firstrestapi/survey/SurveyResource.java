@@ -78,10 +78,10 @@ public class SurveyResource {
 		
 		 String questionId = surveyService.addSurveyQuestion(surveyId, question);
 		 
-		 URI locatıon = URI.create("/surveys/" + surveyId + "/questions/" + questionId);
+		 URI location = URI.create("/surveys/" + surveyId + "/questions/" + questionId);
 		//URI locatıon =  ServletUriComponentsBuilder.
 		//		 fromCurrentRequest().path("/{questionId}").build(questionId);
-		return ResponseEntity.created(locatıon ).build();
+		return ResponseEntity.created(location ).build();
 
 	 }
 
